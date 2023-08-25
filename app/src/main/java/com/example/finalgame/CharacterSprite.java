@@ -14,8 +14,9 @@ public class CharacterSprite {
     int y;
     public CharacterSprite(Bitmap bmp) {
         image = bmp;
-        x=300;
-        y=900;
+        x=-400;
+        x=-400;
+        y=1150;
 
     }
 
@@ -25,8 +26,8 @@ public class CharacterSprite {
 
     public void move(float touchX, float touchY) {
         // Update the character's position based on touch input
-        x = (int) touchX-535;
-        y = (int) touchY-200;
+        x = (int) touchX-835;
+        y = (int) touchY-600;
     }
     public int getX() {
         return x;

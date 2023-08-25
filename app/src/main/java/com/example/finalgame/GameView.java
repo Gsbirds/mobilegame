@@ -30,8 +30,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         foodSprite = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol2), 100, 100);
         foodSprite1 = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol2), 300, 1400);
 
-        characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.shih1
-        ));
+        characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.l9));
     }
 
     @Override
