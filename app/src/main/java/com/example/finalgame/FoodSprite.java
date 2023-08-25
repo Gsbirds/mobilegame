@@ -8,7 +8,7 @@ import android.util.Log;
 public class FoodSprite {
     private Bitmap image;
     private int x, y;
-    private double distanceThreshold = 400.0;
+    private double distanceThreshold = 200.0;
     private boolean isVisible = true; // Track if the image is visible or not
 
     public FoodSprite(Bitmap bmp, int x, int y) {

@@ -25,8 +25,8 @@ public class CharacterSprite {
 
     public void move(float touchX, float touchY) {
         // Update the character's position based on touch input
-        x = (int) touchX;
-        y = (int) touchY;
+        x = (int) touchX-535;
+        y = (int) touchY-200;
     }
     public int getX() {
         return x;
