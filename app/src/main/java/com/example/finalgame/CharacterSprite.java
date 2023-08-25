@@ -14,10 +14,11 @@ public class CharacterSprite {
     int y;
     public CharacterSprite(Bitmap bmp) {
         image = bmp;
-        x=600;
-        y=600;
+        x=300;
+        y=900;
 
     }
+
     public void draw(Canvas canvas) {
         canvas.drawBitmap(image, x, y, null);
     }
@@ -26,6 +27,14 @@ public class CharacterSprite {
         // Update the character's position based on touch input
         x = (int) touchX;
         y = (int) touchY;
+    }
+    public int getX() {
+        return x;
+    }
+
+    // Add a method to get the y-coordinate if needed
+    public int getY() {
+        return y;
     }
 
 }

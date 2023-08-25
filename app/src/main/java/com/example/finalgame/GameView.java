@@ -13,11 +13,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private com.example.finalgame.MainThread thread;
     private CharacterSprite characterSprite;
     private FoodSprite foodSprite;
+    private FoodSprite foodSprite1;
+
     public GameView(Context context) {
 
         super(context);
         getHolder().addCallback(this);
-
     }
 
     @Override
@@ -26,8 +27,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         thread.setRunning(true); // Set running to true before starting
         thread.start(); // Start the thread
         setFocusable(true);
-        foodSprite = new FoodSprite(BitmapFactory.decodeResource(getResources(),R.drawable.shihtzu));
-        characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.shihtzu));
+        foodSprite = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol2), 100, 100);
+        foodSprite1 = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol2), 300, 1400);
+
+        characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.shih1
+        ));
     }
 
     @Override
@@ -61,6 +65,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
     public void update() {
+        foodSprite.checkAndUpdateImage(characterSprite);
+        foodSprite1.checkAndUpdateImage(characterSprite);
 
     }
     @Override
@@ -70,6 +76,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if (canvas != null) {
             characterSprite.draw(canvas);
             foodSprite.draw(canvas);
+            foodSprite1.draw(canvas);
         }
     }
 
@@ -94,7 +101,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 // Handle touch up event (if needed)
                 break;
         }
-
         return true;
     }
 

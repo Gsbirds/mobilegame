@@ -3,25 +3,37 @@ package com.example.finalgame;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.util.Log;
 
 public class FoodSprite {
-    private CharacterSprite characterSprite;
-    private int xVelocity = 10;
-    private int yVelocity = 5;
-    private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-    private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     private Bitmap image;
-    private int x,y;
-    public FoodSprite(Bitmap bmp) {
+    private int x, y;
+    private double distanceThreshold = 400.0;
+    private boolean isVisible = true; // Track if the image is visible or not
+
+    public FoodSprite(Bitmap bmp, int x, int y) {
         image = bmp;
-        x=100;
-        y=100;
+        this.x = x;
+        this.y = y;
+    }
+
+    public void draw(Canvas canvas) {
+        if (isVisible && image != null) {
+            canvas.drawBitmap(image, x, y, null);
+        }
 
     }
-    public void draw(Canvas canvas) {
-        canvas.drawBitmap(image, x, y, null);
-        if(x!= characterSprite.x && y!=characterSprite.y){
-            canvas.drawBitmap(image=null, x, y, null);
+    public void checkAndUpdateImage(CharacterSprite characterSprite) {
+        double distanceX = Math.abs(x - characterSprite.getX());
+        double distanceY = Math.abs(y - characterSprite.getY());
+
+        if (distanceX < distanceThreshold && distanceY < distanceThreshold) {
+            isVisible = false; // Set the flag to hide the image
         }
     }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
 }
