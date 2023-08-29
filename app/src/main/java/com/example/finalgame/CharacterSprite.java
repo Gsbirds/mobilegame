@@ -15,9 +15,7 @@ public class CharacterSprite {
     public CharacterSprite(Bitmap bmp) {
         image = bmp;
         x=-400;
-        x=-400;
-        y=1150;
-
+        y=1100;
     }
 
     public void draw(Canvas canvas) {
