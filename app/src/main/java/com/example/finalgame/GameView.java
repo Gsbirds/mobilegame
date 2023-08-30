@@ -1,6 +1,7 @@
 package com.example.finalgame;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,6 +14,8 @@ import java.util.Random;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private com.example.finalgame.MainThread thread;
+    private int screenWidth =Resources.getSystem().getDisplayMetrics().widthPixels;
+    private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     private boolean isPlaying = false;
 
     private Random random = new Random();
@@ -21,25 +24,23 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private int score = 0;
     private ArrayList<FoodSprite> foodSprites = new ArrayList<>();
 
-    private int foodSpriteSpeed = 10; // Adjust the speed as needed
+    private int foodSpriteSpeed = 15; // Adjust the speed as needed
 
     public GameView(Context context) {
         super(context);
         getHolder().addCallback(this);
     }
-
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         thread = new com.example.finalgame.MainThread(getHolder(), this); // Initialize the thread
         thread.setRunning(true); // Set running to true before starting
         thread.start(); // Start the thread
         setFocusable(true);
-        foodSprite = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol2), 10, 10);
+//        foodSprite = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol2), 10, 10);
 
         for (int i = 0; i < 25; i++) {
-            int randomX = random.nextInt(getWidth()); // Adjust the range as needed
-            int randomY = random.nextInt(getHeight()); // Adjust the range as needed
-
+            int randomX = -500 + random.nextInt(851);
+            int randomY = -1000 + random.nextInt(1051);
             // Create a new FoodSprite and add it to the list
             FoodSprite foodSprite = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol2), randomX, randomY);
             foodSprites.add(foodSprite);
@@ -84,10 +85,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 foodSprite.setY(foodSprite.getY1() + foodSpriteSpeed);
 
                 // Check and update if it should disappear
-                foodSprite.checkAndUpdateImage(characterSprite);
-
-            }
-            for (FoodSprite foodSprite : foodSprites) {
                 if (foodSprite.checkAndUpdateImage(characterSprite)) {
                     // FoodSprite was collected, increase the score
                     score += 1; // Adjust the score increment as needed
@@ -95,6 +92,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
     }
+
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
@@ -116,7 +114,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             } else {
                 // Draw game elements when playing
                 characterSprite.draw(canvas);
-
                 // Loop through the foodSprites list and draw each FoodSprite
                 for (FoodSprite foodSprite : foodSprites) {
                     foodSprite.draw(canvas);

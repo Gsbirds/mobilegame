@@ -10,7 +10,9 @@ public class FoodSprite {
     private int imageWidth;
     private Bitmap image;
     private int x, y;
-    private double distanceThreshold = 200.0;
+    private double distanceThreshold = 25.0;
+    private boolean isCollected = false;
+
     private boolean isVisible = true; // Track if the image is visible or not
 
     public FoodSprite(Bitmap bmp, int x, int y) {
@@ -29,6 +31,12 @@ public class FoodSprite {
     public int getY1() {
         return y;
     }
+    public void setX(int x) {
+        this.x = x;
+    }
+    public int getX1() {
+        return x;
+    }
     public void draw(Canvas canvas) {
         if (isVisible && image != null) {
             canvas.drawBitmap(image, x, y, null);
@@ -36,14 +44,16 @@ public class FoodSprite {
 
     }
     public boolean checkAndUpdateImage(CharacterSprite characterSprite) {
-        double distanceX = Math.abs(x - characterSprite.getX());
-        double distanceY = Math.abs(y - characterSprite.getY());
+        if (!isCollected) {
+            double distanceX = Math.abs(x - characterSprite.getX());
+            double distanceY = Math.abs(y - characterSprite.getY());
 
-        if (distanceX < (distanceThreshold + image.getWidth() / 2) && distanceY < distanceThreshold){
-            isVisible = false; // Set the flag to hide the image
-            return true; // Indicate that the food sprite should disappear
+            if (distanceX < (distanceThreshold + image.getWidth() / 2) && distanceY < distanceThreshold) {
+                isVisible = false; // Set the flag to hide the image
+                isCollected = true;
+                return true; // Indicate that the food sprite should disappear
+            }
         }
-
         return false; // Indicate that the food sprite should not disappear
     }
 

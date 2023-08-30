@@ -7,8 +7,6 @@ import android.graphics.Canvas;
 public class CharacterSprite {
     private int xVelocity = 10;
     private int yVelocity = 5;
-    private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-    private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     private Bitmap image;
     int x;
     int y;
@@ -17,6 +15,7 @@ public class CharacterSprite {
         x=-400;
         y=1100;
     }
+
 
     public void draw(Canvas canvas) {
         canvas.drawBitmap(image, x, y, null);
