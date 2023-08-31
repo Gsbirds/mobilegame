@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
+
+    private int foodSpriteSpeed = 15; // Initial speed
+    private long lastFoodSpriteTime = 0; // To keep track of the time of the last FoodSprite creation
+    private long foodSpriteCreationInterval = 1000;
     private com.example.finalgame.MainThread thread;
     private int screenWidth =Resources.getSystem().getDisplayMetrics().widthPixels;
     private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
@@ -24,7 +28,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private int score = 0;
     private ArrayList<FoodSprite> foodSprites = new ArrayList<>();
 
-    private int foodSpriteSpeed = 15; // Adjust the speed as needed
+//    private int foodSpriteSpeed = 15; // Adjust the speed as needed
 
     public GameView(Context context) {
         super(context);
@@ -36,15 +40,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         thread.setRunning(true); // Set running to true before starting
         thread.start(); // Start the thread
         setFocusable(true);
-//        foodSprite = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol2), 10, 10);
-
-        for (int i = 0; i < 25; i++) {
-            int randomX = -500 + random.nextInt(851);
-            int randomY = -1000 + random.nextInt(1051);
-            // Create a new FoodSprite and add it to the list
-            FoodSprite foodSprite = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol2), randomX, randomY);
-            foodSprites.add(foodSprite);
-        }
         characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.l19));
     }
 
@@ -69,19 +64,24 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public class MainThread extends Thread {
         private SurfaceHolder surfaceHolder;
         private GameView gameView;
-
         public MainThread(SurfaceHolder surfaceHolder, GameView gameView) {
 
             super();
             this.surfaceHolder = surfaceHolder;
             this.gameView = gameView;
-
         }
     }
     public void update() {
         if (isPlaying) {
-            for (FoodSprite foodSprite : foodSprites) {
-                // Update the y-coordinate of each FoodSprite
+            long currentTime = System.currentTimeMillis();
+
+            // Calculate the time elapsed since the last FoodSprite creation
+            long elapsedTimeSinceLastFoodSprite = currentTime - lastFoodSpriteTime;
+
+            for (int i = 0; i < foodSprites.size(); i++) {
+                FoodSprite foodSprite = foodSprites.get(i);
+
+                // Update the y-coordinate of each FoodSprite with speed
                 foodSprite.setY(foodSprite.getY1() + foodSpriteSpeed);
 
                 // Check and update if it should disappear
@@ -90,13 +90,25 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                     score += 1; // Adjust the score increment as needed
                 }
             }
+
+            // Check if it's time to create a new FoodSprite based on elapsed time
+            if (elapsedTimeSinceLastFoodSprite >= foodSpriteCreationInterval) {
+                int randomX = -500 + random.nextInt(851);
+                int randomY = -1000 + random.nextInt(1051);
+
+                // Create a new FoodSprite and update the last creation time
+                FoodSprite foodSprite = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol3), randomX, randomY);
+                foodSprites.add(foodSprite);
+                lastFoodSpriteTime = currentTime;
+
+                // Increment the speed for the next FoodSprite
+                foodSpriteSpeed += 1; // Increase speed by 1 for each FoodSprite
+            }
         }
     }
-
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-
         if (canvas != null) {
             if (!isPlaying) {
                 // Draw a "Play" button
@@ -138,7 +150,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                     // The user tapped inside the button area
                     isPlaying = true;
                     score = 0; // Reset the score
-//                    foodSprites.clear();
                 } else if (isPlaying) {
                     // Handle touch events when the game is playing
                     float x = event.getX();

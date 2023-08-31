@@ -6,11 +6,12 @@ import android.graphics.Canvas;
 import android.util.Log;
 
 public class FoodSprite {
+    private int padding = 10;
     private GameView gameView;
     private int imageWidth;
     private Bitmap image;
     private int x, y;
-    private double distanceThreshold = 25.0;
+    private double distanceThreshold = 200.0;
     private boolean isCollected = false;
 
     private boolean isVisible = true; // Track if the image is visible or not
@@ -48,7 +49,7 @@ public class FoodSprite {
             double distanceX = Math.abs(x - characterSprite.getX());
             double distanceY = Math.abs(y - characterSprite.getY());
 
-            if (distanceX < (distanceThreshold + image.getWidth() / 2) && distanceY < distanceThreshold) {
+            if (distanceX < (distanceThreshold) && distanceY < distanceThreshold) {
                 isVisible = false; // Set the flag to hide the image
                 isCollected = true;
                 return true; // Indicate that the food sprite should disappear
