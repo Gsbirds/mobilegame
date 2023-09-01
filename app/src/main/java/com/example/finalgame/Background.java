@@ -4,16 +4,16 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-public class CharacterSprite {
+public class Background {
     private int xVelocity = 10;
     private int yVelocity = 5;
     private Bitmap image;
     int x;
     int y;
-    public CharacterSprite(Bitmap bmp) {
+    public Background(Bitmap bmp) {
         image = bmp;
-        x=-400;
-        y=1200;
+        x=-800;
+        y=-1080;
     }
 
 
@@ -21,11 +21,6 @@ public class CharacterSprite {
         canvas.drawBitmap(image, x, y, null);
     }
 
-    public void move(float touchX, float touchY) {
-        // Update the character's position based on touch input
-        x = (int) touchX-835;
-        y = (int) touchY-600;
-    }
     public int getX() {
         return x;
     }

@@ -2,6 +2,7 @@ package com.example.finalgame;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -23,6 +24,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean isPlaying = false;
 
     private Random random = new Random();
+    private Background background;
     private CharacterSprite characterSprite;
     private FoodSprite foodSprite;
     private int score = 0;
@@ -40,7 +42,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         thread.setRunning(true); // Set running to true before starting
         thread.start(); // Start the thread
         setFocusable(true);
+        background = new Background(BitmapFactory.decodeResource(getResources(),R.drawable.red_shroom4));
         characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.l19));
+
     }
 
     @Override
@@ -72,40 +76,40 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
     public void update() {
-        if (isPlaying) {
-            long currentTime = System.currentTimeMillis();
+            if (isPlaying) {
+                long currentTime = System.currentTimeMillis();
 
-            // Calculate the time elapsed since the last FoodSprite creation
-            long elapsedTimeSinceLastFoodSprite = currentTime - lastFoodSpriteTime;
+                // Calculate the time elapsed since the last FoodSprite creation
+                long elapsedTimeSinceLastFoodSprite = currentTime - lastFoodSpriteTime;
 
-            for (int i = 0; i < foodSprites.size(); i++) {
-                FoodSprite foodSprite = foodSprites.get(i);
+                for (int i = 0; i < foodSprites.size(); i++) {
+                    FoodSprite foodSprite = foodSprites.get(i);
 
-                // Update the y-coordinate of each FoodSprite with speed
-                foodSprite.setY(foodSprite.getY1() + foodSpriteSpeed);
+                    // Update the y-coordinate of each FoodSprite with speed
+                    foodSprite.setY(foodSprite.getY1() + foodSpriteSpeed);
 
-                // Check and update if it should disappear
-                if (foodSprite.checkAndUpdateImage(characterSprite)) {
-                    // FoodSprite was collected, increase the score
-                    score += 1; // Adjust the score increment as needed
+                    // Check and update if it should disappear
+                    if (foodSprite.checkAndUpdateImage(characterSprite)) {
+                        // FoodSprite was collected, increase the score
+                        score += 1; // Adjust the score increment as needed
+                    }
+                }
+
+                // Check if it's time to create a new FoodSprite based on elapsed time
+                if (elapsedTimeSinceLastFoodSprite >= foodSpriteCreationInterval) {
+                    int randomX = -500 + random.nextInt(851);
+                    int randomY = -1000 + random.nextInt(1051);
+
+                    // Create a new FoodSprite and update the last creation time
+                    FoodSprite foodSprite = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol3), randomX, randomY);
+                    foodSprites.add(foodSprite);
+                    lastFoodSpriteTime = currentTime;
+
+                    // Increment the speed for the next FoodSprite
+                    foodSpriteSpeed += 1; // Increase speed by 1 for each FoodSprite
                 }
             }
-
-            // Check if it's time to create a new FoodSprite based on elapsed time
-            if (elapsedTimeSinceLastFoodSprite >= foodSpriteCreationInterval) {
-                int randomX = -500 + random.nextInt(851);
-                int randomY = -1000 + random.nextInt(1051);
-
-                // Create a new FoodSprite and update the last creation time
-                FoodSprite foodSprite = new FoodSprite(BitmapFactory.decodeResource(getResources(), R.drawable.eggsmol3), randomX, randomY);
-                foodSprites.add(foodSprite);
-                lastFoodSpriteTime = currentTime;
-
-                // Increment the speed for the next FoodSprite
-                foodSpriteSpeed += 1; // Increase speed by 1 for each FoodSprite
-            }
         }
-    }
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
@@ -125,6 +129,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 canvas.drawText("Play", 260, 260, textPaint);
             } else {
                 // Draw game elements when playing
+                background.draw(canvas);
+
                 characterSprite.draw(canvas);
                 // Loop through the foodSprites list and draw each FoodSprite
                 for (FoodSprite foodSprite : foodSprites) {
