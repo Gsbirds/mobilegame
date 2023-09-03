@@ -12,6 +12,8 @@ public class Background {
     int y;
     public Background(Bitmap bmp) {
         image = bmp;
+//        x=-400;
+//        y=-200;
         x=-800;
         y=-1080;
     }
