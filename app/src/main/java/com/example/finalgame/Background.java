@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 public class Background {
+    private Bitmap backgroundImage;
     private int xVelocity = 10;
     private int yVelocity = 5;
     private Bitmap image;
@@ -18,7 +19,9 @@ public class Background {
         y=-1080;
     }
 
-
+    public void setBackgroundImage(Bitmap newBackground) {
+        backgroundImage = newBackground;
+    }
     public void draw(Canvas canvas) {
         canvas.drawBitmap(image, x, y, null);
     }

@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -15,8 +16,11 @@ import java.util.Random;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-
+    private Bitmap redShroomBackground;
+    private Bitmap blueMeanieBackground;
+    private boolean drawRedShroomBackground = true;
     private int foodSpriteSpeed = 15; // Initial speed
+
     private long lastFoodSpriteTime = 0; // To keep track of the time of the last FoodSprite creation
     private long foodSpriteCreationInterval = 1000;
     private com.example.finalgame.MainThread thread;
@@ -46,7 +50,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         thread.setRunning(true); // Set running to true before starting
         thread.start(); // Start the thread
         setFocusable(true);
-        background = new Background(BitmapFactory.decodeResource(getResources(),R.drawable.red_shroom4));
+        redShroomBackground = BitmapFactory.decodeResource(getResources(), R.drawable.red_shroom4);
+        blueMeanieBackground = BitmapFactory.decodeResource(getResources(), R.drawable.blue_meanie);
+        background = new Background(redShroomBackground);
+
+//        background = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.red_shroom4));
         characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.l19));
 
     }
@@ -93,7 +101,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         // Check if 10 seconds have passed
         if (elapsedTime >= 50000) {
             // Stop the game after 10 seconds
-            if (score > 26) {
+            if (score > 2) {
                 levelUp=true;
             }
             restart= true;
@@ -148,7 +156,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 textPaint.setTextSize(48);
 
                 canvas.drawText("Play", 260, 260, textPaint);
-            } else if (restart){
+            } else if (restart) {
+//                if (levelUp) {
+//                    // Set the background to blue_meanie if levelUp is true
+//                    canvas.drawBitmap(blueMeanieBackground, 0, 0, null);
+//                } else {
+//                    // Set the background to red_shroom4 if levelUp is false
+//                    canvas.drawColor(Color.BLACK);
+//
+//                    canvas.drawBitmap(redShroomBackground, 0, 0, null);
+//                }
+                characterSprite.draw(canvas);
                 Paint buttonPaint = new Paint();
                 buttonPaint.setColor(Color.rgb(255, 105, 180));
                 buttonPaint.setStyle(Paint.Style.FILL);
@@ -160,17 +178,24 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 textPaint.setTextSize(48);
 
                 canvas.drawText("Restart", 700, 108, textPaint);
-                background.draw(canvas);
+//                background.draw(canvas);
                 characterSprite.draw(canvas);
                 Paint paint = new Paint();
                 paint.setColor(Color.rgb(255, 105, 180));
                 paint.setTextSize(48);
                 canvas.drawText("Score: " + score, 50, 50, paint);
-//            }
 
-            } else if (isPlaying){
+            } else if (isPlaying) {
+                if (levelUp) {
+                    // Set the background to blue_meanie if levelUp is true
+                    canvas.drawBitmap(blueMeanieBackground, -300, -50, null);
+                } else {
+                    canvas.drawColor(Color.BLACK);
+                    // Set the background to red_shroom4 if levelUp is false
+                    canvas.drawBitmap(redShroomBackground, -800, -1200, null);
+                }
                 // Draw game elements when playing
-                background.draw(canvas);
+//                background.draw(canvas);
 
                 characterSprite.draw(canvas);
                 // Loop through the foodSprites list and draw each FoodSprite
