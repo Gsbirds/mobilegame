@@ -58,7 +58,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         setFocusable(true);
         redShroomBackground = BitmapFactory.decodeResource(getResources(), R.drawable.red_shroom4);
         blueMeanieBackground = BitmapFactory.decodeResource(getResources(), R.drawable.blue_meanie);
-        pinkShroomBackground = BitmapFactory.decodeResource(getResources(), R.drawable.pink_shroom);
+        pinkShroomBackground = BitmapFactory.decodeResource(getResources(), R.drawable.pink_shroom3);
         background = new Background(redShroomBackground);
 
 //        background = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.red_shroom4));
@@ -197,14 +197,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                     // Set the background to blue_meanie if levelUp is true
                     canvas.drawBitmap(blueMeanieBackground, -300, -50, null);
                 } else if (levelUp2){
-                    canvas.drawBitmap(pinkShroomBackground, -300, -50, null);
+                    canvas.drawBitmap(pinkShroomBackground, -1630, -3600, null);
                 }
                 else {
                     canvas.drawColor(Color.BLACK);
                     // Set the background to red_shroom4 if levelUp is false
                     canvas.drawBitmap(redShroomBackground, -800, -1200, null);
                 }
-                // Draw game elements when playing
                 characterSprite.draw(canvas);
                 // Loop through the foodSprites list and draw each FoodSprite
                 for (FoodSprite foodSprite : foodSprites) {
