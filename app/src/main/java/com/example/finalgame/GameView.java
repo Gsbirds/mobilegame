@@ -1,5 +1,7 @@
 package com.example.finalgame;
 
+import static com.example.finalgame.MainThread.canvas;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -8,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -18,6 +21,7 @@ import android.content.DialogInterface;
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap redShroomBackground;
     private Bitmap blueMeanieBackground;
+    private Bitmap pinkShroomBackground;
     private boolean drawRedShroomBackground = true;
     private int foodSpriteSpeed = 15; // Initial speed
 
@@ -29,11 +33,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean isPlaying = false;
     private boolean restart = false;
     private boolean levelUp = false;
+    private boolean levelUp2 = false;
     private long gameStartTime = 0;
     private Random random = new Random();
     private Background background;
     private CharacterSprite characterSprite;
     private FoodSprite foodSprite;
+    private int count=0;
     private int score = 0;
     private ArrayList<FoodSprite> foodSprites = new ArrayList<>();
 
@@ -52,12 +58,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         setFocusable(true);
         redShroomBackground = BitmapFactory.decodeResource(getResources(), R.drawable.red_shroom4);
         blueMeanieBackground = BitmapFactory.decodeResource(getResources(), R.drawable.blue_meanie);
+        pinkShroomBackground = BitmapFactory.decodeResource(getResources(), R.drawable.pink_shroom);
         background = new Background(redShroomBackground);
 
 //        background = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.red_shroom4));
         characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.l19));
-
     }
+
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
@@ -97,12 +104,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         // Calculate the time elapsed since the game started
         long elapsedTime = currentTime - gameStartTime;
-
         // Check if 10 seconds have passed
         if (elapsedTime >= 50000) {
             // Stop the game after 10 seconds
-            if (score > 2) {
-                levelUp=true;
+            if (score > 70) {
+                levelUp2=true;
+                levelUp=false;
+            } else if (score>20 && score<70) {
+                levelUp = true;
             }
             restart= true;
             return;
@@ -133,9 +142,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             foodSprites.add(foodSprite);
             lastFoodSpriteTime = currentTime;
 
-            // Increment the speed for the next FoodSprite
-            foodSpriteSpeed += 1; // Increase speed by 1 for each FoodSprite
+            if (levelUp) {
+                foodSpriteSpeed += 2; // Increase speed by 2 for each FoodSprite when levelUp is true
+            } else if (levelUp2){
+                foodSpriteSpeed+=4;
+            } else {
+                foodSpriteSpeed += 1; // Increase speed by 1 for each FoodSprite when levelUp is false
+            }
         }
+
     }
 
 
@@ -157,15 +172,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
                 canvas.drawText("Play", 260, 260, textPaint);
             } else if (restart) {
-//                if (levelUp) {
-//                    // Set the background to blue_meanie if levelUp is true
-//                    canvas.drawBitmap(blueMeanieBackground, 0, 0, null);
-//                } else {
-//                    // Set the background to red_shroom4 if levelUp is false
-//                    canvas.drawColor(Color.BLACK);
-//
-//                    canvas.drawBitmap(redShroomBackground, 0, 0, null);
-//                }
                 characterSprite.draw(canvas);
                 Paint buttonPaint = new Paint();
                 buttonPaint.setColor(Color.rgb(255, 105, 180));
@@ -186,17 +192,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 canvas.drawText("Score: " + score, 50, 50, paint);
 
             } else if (isPlaying) {
+
                 if (levelUp) {
                     // Set the background to blue_meanie if levelUp is true
                     canvas.drawBitmap(blueMeanieBackground, -300, -50, null);
-                } else {
+                } else if (levelUp2){
+                    canvas.drawBitmap(pinkShroomBackground, -300, -50, null);
+                }
+                else {
                     canvas.drawColor(Color.BLACK);
                     // Set the background to red_shroom4 if levelUp is false
                     canvas.drawBitmap(redShroomBackground, -800, -1200, null);
                 }
                 // Draw game elements when playing
-//                background.draw(canvas);
-
                 characterSprite.draw(canvas);
                 // Loop through the foodSprites list and draw each FoodSprite
                 for (FoodSprite foodSprite : foodSprites) {
@@ -226,7 +234,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                     // The user tapped inside the "Restart" button area
                     restart = false; // Reset the restart flag
                     isPlaying = true; // Start the game again
-                    score = 0; // Reset the score
+//                    score = 0; // Reset the score
                     gameStartTime = System.currentTimeMillis(); // Reset the game start time
                     foodSprites.clear(); // Clear the food sprites
                     foodSpriteSpeed = 15;
