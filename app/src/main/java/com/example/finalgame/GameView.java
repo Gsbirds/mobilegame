@@ -1,35 +1,26 @@
 package com.example.finalgame;
 
-import static com.example.finalgame.MainThread.canvas;
-
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.util.ArrayList;
 import java.util.Random;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap redShroomBackground;
     private Bitmap blueMeanieBackground;
     private Bitmap pinkShroomBackground;
-    private boolean drawRedShroomBackground = true;
     private int foodSpriteSpeed = 15; // Initial speed
-
+    private long lastBadSpriteTime = 0;
     private long lastFoodSpriteTime = 0; // To keep track of the time of the last FoodSprite creation
     private long foodSpriteCreationInterval = 1000;
+    private long badSpriteCreationInterval = 3000;
     private com.example.finalgame.MainThread thread;
-    private int screenWidth =Resources.getSystem().getDisplayMetrics().widthPixels;
-    private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     private boolean isPlaying = false;
     private boolean restart = false;
     private boolean levelUp = false;
@@ -39,9 +30,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private Background background;
     private CharacterSprite characterSprite;
     private FoodSprite foodSprite;
-    private int count=0;
     private int score = 0;
     private ArrayList<FoodSprite> foodSprites = new ArrayList<>();
+    private ArrayList<BadSprite> badsprites = new ArrayList<>();
 
 //    private int foodSpriteSpeed = 15; // Adjust the speed as needed
 
@@ -101,7 +92,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             // If the game is not playing, there's nothing to update
             return;
         }
-
         // Calculate the time elapsed since the game started
         long elapsedTime = currentTime - gameStartTime;
         // Check if 10 seconds have passed
@@ -145,15 +135,47 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             if (levelUp) {
                 foodSpriteSpeed += 2; // Increase speed by 2 for each FoodSprite when levelUp is true
             } else if (levelUp2){
-                foodSpriteSpeed+=4;
+                foodSpriteSpeed+=2.5;
             } else {
                 foodSpriteSpeed += 1; // Increase speed by 1 for each FoodSprite when levelUp is false
             }
         }
 
+        long elapsedTimeSinceLastBadSprite = currentTime - lastBadSpriteTime;
+
+        for (int i = 0; i < badsprites.size(); i++) {
+        BadSprite badSprite = badsprites.get(i);
+
+        // Update the y-coordinate of each FoodSprite with speed
+        badSprite.setY(badSprite.getY1() + foodSpriteSpeed);
+
+        // Check and update if it should disappear
+        if (badSprite.checkAndUpdateImage(characterSprite)) {
+            // FoodSprite was collected, increase the score
+            score -= 1; // Adjust the score increment as needed
+        }
     }
 
+    // Check if it's time to create a new FoodSprite based on elapsed time
+        if (elapsedTimeSinceLastBadSprite >= badSpriteCreationInterval) {
+        int randomX = -500 + random.nextInt(851);
+        int randomY = -1000 + random.nextInt(1051);
 
+        // Create a new FoodSprite and update the last creation time
+        BadSprite badSprite = new BadSprite(BitmapFactory.decodeResource(getResources(), R.drawable.badsprite4), randomX, randomY);
+        badsprites.add(badSprite);
+        lastBadSpriteTime = currentTime;
+
+        if (levelUp) {
+            foodSpriteSpeed += 2; // Increase speed by 2 for each FoodSprite when levelUp is true
+        } else if (levelUp2){
+            foodSpriteSpeed+=2.5;
+        } else {
+            foodSpriteSpeed += 1; // Increase speed by 1 for each FoodSprite when levelUp is false
+        }
+    }
+
+}
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
@@ -205,10 +227,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                     canvas.drawBitmap(redShroomBackground, -800, -1200, null);
                 }
                 characterSprite.draw(canvas);
+                for (BadSprite badSprite : badsprites) {
+                    badSprite.draw(canvas);
+                }
                 // Loop through the foodSprites list and draw each FoodSprite
                 for (FoodSprite foodSprite : foodSprites) {
                     foodSprite.draw(canvas);
                 }
+
                 // Draw the score
                 Paint paint = new Paint();
                 paint.setColor(Color.rgb(255, 105, 180));
@@ -236,6 +262,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 //                    score = 0; // Reset the score
                     gameStartTime = System.currentTimeMillis(); // Reset the game start time
                     foodSprites.clear(); // Clear the food sprites
+                    badsprites.clear();
                     foodSpriteSpeed = 15;
                 } else if (isPlaying) {
                     // Handle touch events when the game is playing
